@@ -6,7 +6,8 @@ import hotelsRepository from '@/repositories/hotel-repository';
 
 async function verify(userId: number) {
   const enrollment: Enrollment = await enrollmentRepository.findWithAddressByUserId(userId);
-  const ticket = await ticketRepository.findTicketByEnrollmentId(enrollment.id);
+  let ticket;
+  enrollment && (ticket = await ticketRepository.findTicketByEnrollmentId(enrollment.id));
 
   if (!enrollment || !enrollment) throw notFoundError();
 
