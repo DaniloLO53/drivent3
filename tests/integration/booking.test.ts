@@ -227,7 +227,7 @@ describe('POST /booking', () => {
   });
 });
 
-describe('PUT/bookings/bookingId', () => {
+describe('PUT/booking/bookingId', () => {
   it('should respond with status 401 if no token is given', async () => {
     const response = await server.put('/booking/1');
 
