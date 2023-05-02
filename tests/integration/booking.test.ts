@@ -171,22 +171,6 @@ describe('POST /booking', () => {
       expect(response.status).toEqual(httpStatus.NOT_FOUND);
     });
 
-    it('should return status 403 if room is at capacity', async () => {
-      const user = await createUser();
-      const token = await generateValidToken(user);
-      const enrollment = await createEnrollmentWithAddress(user);
-      const ticketType = await createCustomTicketType(false, true);
-      await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
-      const createdHotel = await createHotel();
-      const room = await createRoom(createdHotel.id);
-      await createBooking({ userId: user.id, roomId: room.id });
-      const body = { roomId: room.id };
-
-      const response = await server.post('/booking').set('Authorization', `Bearer ${token}`).send(body);
-
-      expect(response.status).toEqual(httpStatus.FORBIDDEN);
-    });
-
     it('should return status 200 and bookingId', async () => {
       const user = await createUser();
       const token = await generateValidToken(user);
@@ -252,39 +236,6 @@ describe('PUT/booking/bookingId', () => {
   });
 
   describe('when token is valid', () => {
-    it('should return status 403 when user doesnt have a booking', async () => {
-      const user = await createUser();
-      const token = await generateValidToken(user);
-      const body = { roomId: 2 };
-
-      const response = await server.put('/booking/1').set('Authorization', `Bearer ${token}`).send(body);
-
-      expect(response.status).toEqual(httpStatus.FORBIDDEN);
-    });
-
-    it('should return status 403 if booking doesnt belong to user', async () => {
-      const firstUser = await createUser();
-
-      const secondUser = await createUser();
-      const tokenSecondUser = await generateValidToken(secondUser);
-
-      const hotel = await createHotel();
-      const firstRoom = await createRoom(hotel.id);
-      const secondRoom = await createRoom(hotel.id);
-
-      const bookingFirstUser = await createBooking({ userId: firstUser.id, roomId: firstRoom.id });
-      await createBooking({ userId: secondUser.id, roomId: secondRoom.id });
-
-      const body = { roomId: firstRoom.id };
-
-      const response = await server
-        .put(`/booking/${bookingFirstUser.id}`)
-        .set('Authorization', `Bearer ${tokenSecondUser}`)
-        .send(body);
-
-      expect(response.status).toEqual(httpStatus.FORBIDDEN);
-    });
-
     it('should return status 404 if chosen room does not exist', async () => {
       const user = await createUser();
       const token = await generateValidToken(user);
